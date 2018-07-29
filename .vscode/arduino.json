@@ -1,0 +1,7 @@
+{
+    "sketch": "examples/debounce_button/debounce_button.ino",
+    "board": "esp8266:esp8266:nodemcuv2",
+    "configuration": "CpuFrequency=80,FlashSize=4M1M,LwIPVariant=v2mss536,Debug=Disabled,DebugLevel=None____,FlashErase=none,UploadSpeed=921600",
+    "output": "build",
+    "port": "/dev/nodemcu"
+}
