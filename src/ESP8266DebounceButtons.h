@@ -2,12 +2,11 @@
 #define _ESP8266_DEBOUNCE_BUTTONS_H
 
 #include <Ticker.h>
-#include <functional>
 #include <eagle_soc.h>
 
 
 class ESP8266DebounceButtons{
-  typedef std::function<void(uint16_t pressedMS)> callbackFunction;
+  typedef void(*callbackFunction)(uint16_t pressedMS);
   private:
     uint8_t checkDelayMS;
     callbackFunction buttonCallbacks[GPIO_PIN_COUNT];
@@ -25,7 +24,6 @@ class ESP8266DebounceButtons{
     ESP8266DebounceButtons(uint8_t checkDelayMS);
 
     static ESP8266DebounceButtons* instance;
-    static void handleTicker();
 
     void addButtonPin(uint8_t pin,  callbackFunction callback);
     void removeButtonPin(uint8_t pin);

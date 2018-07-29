@@ -39,7 +39,9 @@ void ESP8266DebounceButtons::removeButtonPin(uint8_t pin){
 }
 
 void ESP8266DebounceButtons::_enable(){
-  theTicker.attach_ms(checkDelayMS, ESP8266DebounceButtons::handleTicker);
+  theTicker.attach_ms(checkDelayMS, []{
+    ESP8266DebounceButtons::instance->_checkButtons();
+  });
 }
 
 void ESP8266DebounceButtons::_disable(){
@@ -139,7 +141,4 @@ void ESP8266DebounceButtons::_checkButtons(){
       break;
   }
 
-}
-void ESP8266DebounceButtons::handleTicker(){
-  ESP8266DebounceButtons::instance->_checkButtons();
 }
