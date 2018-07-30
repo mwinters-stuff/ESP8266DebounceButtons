@@ -6,12 +6,11 @@
 
 class ESP8266DebounceButtons
 {
-  typedef void (*callbackFunction)(uint16_t timeMS);
+  typedef void (*callbackFunction)(bool pressed);
 
 private:
   uint8_t checkDelayMS;
   callbackFunction buttonCallbacks[GPIO_PIN_COUNT];
-  uint32_t buttonTimeMS;
   Ticker theTicker;
   uint16_t buttonsReleaseMask;
   uint16_t buttonsPressMask;

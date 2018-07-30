@@ -19,7 +19,7 @@ ESP8266DebounceButtons::ESP8266DebounceButtons(uint8_t checkDelayMS) : checkDela
   ESP8266DebounceButtons::instance = this;
   for (int pin = 0; pin < GPIO_PIN_COUNT; pin++)
   {
-    buttonCallbacks[pin] = [](uint16_t) {};
+    buttonCallbacks[pin] = [](bool) {};
   }
 }
 
@@ -45,7 +45,7 @@ void ESP8266DebounceButtons::removeButtonReleasePin(uint8_t pin)
   {
     _disable();
   }
-  buttonCallbacks[pin] = [](uint16_t) {};
+  buttonCallbacks[pin] = [](bool) {};
   bitClear(buttonsReleaseMask, pin);
   if (isEnabled)
   {
@@ -75,7 +75,7 @@ void ESP8266DebounceButtons::removeButtonPressPin(uint8_t pin)
   {
     _disable();
   }
-  buttonCallbacks[pin] = [](uint16_t) {};
+  buttonCallbacks[pin] = [](bool) {};
   bitClear(buttonsPressMask, pin);
   if (isEnabled)
   {
@@ -122,12 +122,12 @@ void ESP8266DebounceButtons::update()
       if (bitRead(buttonsReleaseMask, pin) && bitRead(buttonsReleased, pin))
       {
         bitClear(buttonsReleased, pin);
-        buttonCallbacks[pin](buttonTimeMS);
+        buttonCallbacks[pin](false);
       }
       if (bitRead(buttonsPressMask, pin) && bitRead(buttonsPressed, pin))
       {
         bitClear(buttonsPressed, pin);
-        buttonCallbacks[pin](buttonTimeMS);
+        buttonCallbacks[pin](true);
       }
     }
     _enable();
@@ -136,9 +136,9 @@ void ESP8266DebounceButtons::update()
 
 void ESP8266DebounceButtons::_checkButtons()
 {
-  uint16_t buttonsUp = GPIO_REG_READ(GPIO_IN_ADDRESS);
-  buttonsReleased = _debounceButtons(buttonsReleaseMask, buttonsUp, release_state, release_prevTimeMillis, release_mask);
-  buttonsPressed = _debounceButtons(buttonsPressMask, ~buttonsUp, press_state, press_prevTimeMillis, press_mask);
+  uint16_t buttons = GPIO_REG_READ(GPIO_IN_ADDRESS);
+  buttonsReleased = _debounceButtons(buttonsReleaseMask, buttons, release_state, release_prevTimeMillis, release_mask);
+  buttonsPressed = _debounceButtons(buttonsPressMask, ~buttons, press_state, press_prevTimeMillis, press_mask);
 }
 
 // Uses a finite state machine to detect a single button press and return
@@ -166,7 +166,6 @@ uint16_t ESP8266DebounceButtons::_debounceButtons(const uint16_t buttonsMask, co
     {
       if (~buttonsNow & mask) // and if a masked button is still down
       {
-        buttonTimeMS = prevTimeMillis;
         state = 2;                 // proceed to next state
         mask = ~buttonsNow & mask; // new mask becomes all of masked down buttons
       }
@@ -196,7 +195,6 @@ uint16_t ESP8266DebounceButtons::_debounceButtons(const uint16_t buttonsMask, co
       if (buttonsNow & mask) // and if a masked button is still up
       {
         state = 0; // next state becomes initial state
-        buttonTimeMS = timeMillis - buttonTimeMS;
         _disable();
         return buttonsNow & mask; // return masked up buttons
       }
