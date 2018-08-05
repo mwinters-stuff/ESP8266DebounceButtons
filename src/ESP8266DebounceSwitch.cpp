@@ -16,16 +16,16 @@ ESP8266DebounceSwitch::ESP8266DebounceSwitch():
   ESP8266DebounceSwitch::instance = this;
 }
 
-void _checkPinClosed(uint8_t pin)
+void ESP8266DebounceSwitch::_checkPinClosed(uint8_t pin)
 {
   ESP8266DebounceSwitch::instance->checkPinClosed(pin);
 }
-void _checkPinOpen(uint8_t pin)
+void ESP8266DebounceSwitch::_checkPinOpen(uint8_t pin)
 {
   ESP8266DebounceSwitch::instance->checkPinOpen(pin);
 }
 
-void _pinClosedISR(void *arg){
+void ESP8266DebounceSwitch::_pinClosedISR(void *arg){
   ESP8266DebounceSwitch::instance->pinClosedISR((uint32_t) arg);
 }
 
@@ -33,7 +33,7 @@ void ESP8266DebounceSwitch::pinClosedISR(uint8_t pin){
   pinTickers[pin].once_ms(20,_checkPinClosed,pin);
 }
 
-void _pinOpenISR(void *arg){
+void ESP8266DebounceSwitch::_pinOpenISR(void *arg){
   ESP8266DebounceSwitch::instance->pinOpenISR((uint32_t) arg);
 }
 
