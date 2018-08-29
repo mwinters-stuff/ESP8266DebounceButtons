@@ -44,6 +44,8 @@
     "string_view": "cpp",
     "system_error": "cpp",
     "algorithm": "cpp",
-    "bitset": "cpp"
+    "bitset": "cpp",
+    "__config": "cpp",
+    "__nullptr": "cpp"
   }
 }

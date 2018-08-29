@@ -22,9 +22,6 @@ class ESP8266DebounceSwitch
     uint32_t buttonClosedMillis[GPIO_PIN_COUNT];
     Ticker pinTickers[GPIO_PIN_COUNT];
     
-    static void _pinOpenISR(void *arg);
-    static void _pinClosedISR(void *arg);
-
     void pinClosedISR(uint8_t pin);
     void pinOpenISR(uint8_t pin);
 
@@ -41,7 +38,7 @@ class ESP8266DebounceSwitch
   
     ESP8266DebounceSwitch();
 
-    static ESP8266DebounceSwitch *instance;
+    static  ESP8266DebounceSwitch *instance;
 
     void addSwitchPin(uint8_t pin, bool waitClosed, callbackFunctionSwitch callback);
     void removeSwitchPin(uint8_t pin);

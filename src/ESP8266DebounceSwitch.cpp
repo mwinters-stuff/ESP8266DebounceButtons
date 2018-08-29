@@ -1,9 +1,8 @@
 #include <Arduino.h>
+#include <functional>
+#include <FunctionalInterrupt.h>
 
 #include "ESP8266DebounceSwitch.h"
-
-typedef void (*voidFuncPtr)(void);
-extern "C" void ICACHE_RAM_ATTR __attachInterruptArg(uint8_t pin, voidFuncPtr userFunc, void*fp , int mode);
 
 ESP8266DebounceSwitch *ESP8266DebounceSwitch::instance;
 
@@ -25,16 +24,8 @@ void ESP8266DebounceSwitch::_checkPinOpen(uint8_t pin)
   ESP8266DebounceSwitch::instance->checkPinOpen(pin);
 }
 
-void ESP8266DebounceSwitch::_pinClosedISR(void *arg){
-  ESP8266DebounceSwitch::instance->pinClosedISR((uint32_t) arg);
-}
-
 void ESP8266DebounceSwitch::pinClosedISR(uint8_t pin){
   pinTickers[pin].once_ms(20,_checkPinClosed,pin);
-}
-
-void ESP8266DebounceSwitch::_pinOpenISR(void *arg){
-  ESP8266DebounceSwitch::instance->pinOpenISR((uint32_t) arg);
 }
 
 void ESP8266DebounceSwitch::pinOpenISR(uint8_t pin){
@@ -49,11 +40,13 @@ void ESP8266DebounceSwitch::addSwitchPin(uint8_t pin, bool waitClosed, callbackF
   bitClear(pinsWaitOpenMask, pin);
   bitSet(waitClosed ? pinsWaitClosedMask : pinsWaitOpenMask, pin);
   detachInterrupt(digitalPinToInterrupt(pin));
-  
+
   if(waitClosed){
-    __attachInterruptArg(digitalPinToInterrupt(pin),(voidFuncPtr) _pinClosedISR,(void*)(uint32_t) pin, FALLING);
+    auto f = std::bind(&ESP8266DebounceSwitch::pinClosedISR, this, pin);
+    attachInterrupt(digitalPinToInterrupt(pin), f, FALLING);
   }else{
-    __attachInterruptArg(digitalPinToInterrupt(pin),(voidFuncPtr) _pinOpenISR,(void*)(uint32_t) pin, RISING);
+    auto f = std::bind(&ESP8266DebounceSwitch::pinOpenISR, this,pin);
+    attachInterrupt(digitalPinToInterrupt(pin), f, RISING);
   }
 }
 
