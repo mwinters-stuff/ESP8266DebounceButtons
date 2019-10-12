@@ -1,10 +1,12 @@
 {
-  "name": "ESP8266DebounceButtons",
-  "keywords": "esp8266, button, debounce",
-  "description": "Arduino Library for Debouncing ESP8266 Buttons and Switches",
-  "repository":
-  {
-    "type": "git",
-    "url": "https://github.com/mwinters-stuff/ESP8266DebounceButtons.git"
-  }
+	"name": "ESP8266DebounceButtons",
+	"keywords": "esp8266, button, debounce",
+	"description": "Arduino Library for Debouncing ESP8266 Buttons and Switches",
+	"version": "1.0.0",
+	"frameworks": "arduino",
+	"platforms": "esp8266",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/mwinters-stuff/ESP8266DebounceButtons.git"
+	}
 }
